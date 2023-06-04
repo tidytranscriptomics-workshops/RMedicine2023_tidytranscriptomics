@@ -216,6 +216,7 @@ seurat_obj |>
 	) 
 ```
 
+#### Signature calculation
 
 They were able to use tidyseurat's `join_features` to select the counts for the genes in the signature, followed by tidyverse `mutate` to easily create a column containing the signature score.
 
@@ -289,11 +290,16 @@ seurat_obj |>
 	RMedicine2023tidytranscriptomics::theme_multipanel
 ```
 
+#### Filtering based on gate
+
 The gamma delta T cells (the blue cluster on the left with high signature score) could be interactively selected from the plot using the tidygate package.
+
+This code can only be executed interactively from an R file and not from a markdown file. So, in this casre, we need to copy and paste this into the console.
 
 ```{r eval=FALSE}
 
-seurat_obj |>
+seurat_obj_gamma_delta = 
+  seurat_obj |>
 	
 	
 	join_features(
@@ -318,12 +324,14 @@ seurat_obj |>
 
 ```
 
+#### Filtering based on threshold
+
 For exploratory analyses, we can select the gamma delta T cells, the red cluster on the left with high signature score. We'll filter for cells with a signature score > 0.7.
 
 ```{r eval = FALSE}
-sce_obj_gamma_delta <-
+seurat_obj_gamma_delta <-
 	
-	sce_obj |>
+	seurat_obj |>
 	
 	join_features(
 		features = c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B"), shape = "wide"
@@ -336,12 +344,15 @@ sce_obj_gamma_delta <-
 	) |>
 	
 	# Proper cluster selection should be used instead (see supplementary material)
-	filter(signature_score > 0.7)
+	filter(signature_score > 0.5)
 ```
+
+#### Reanalysis after filtering
 
 It was then possible to perform analyses on these gamma delta T cells by simply chaining further commands, such as below.
 
-```{r eval = FALSE}
+```{r eval = FALSE, warning=FALSE}
+source("https://raw.githubusercontent.com/satijalab/seurat-wrappers/master/R/fast_mnn.R")
 
 seurat_obj |>
 	
@@ -359,13 +370,13 @@ seurat_obj |>
 	) |>
 	
 	# Proper cluster selection should be used instead (see supplementary material)
-	filter(signature_score > 0.7) |> 
+	filter(signature_score > 0.5) |> 
 	
 	# Reanalysis
 	NormalizeData(assay="RNA") |> 
 	FindVariableFeatures(nfeatures = 100, assay="RNA") |>
 	SplitObject(split.by = "file") |> 
-	RunFastMNN(assay="RNA") |> 
+	SeuratWrappers::RunFastMNN(assay="RNA", features = 100) |> 
 	RunUMAP(reduction = "mnn", dims = 1:20) |> 
 	FindNeighbors(dims = 1:20, reduction = "mnn") |> 
 	FindClusters(resolution = 0.3)
@@ -375,18 +386,18 @@ For comparison, we show the alternative using base R and SingleCellExperiment. N
 
 ```{r eval=FALSE}
 counts_positive <-
-	assay(sce_obj, "logcounts")[c("CD3D", "TRDC", "TRGC1", "TRGC2"), ] |>
+	assay(seurat_obj, "logcounts")[c("CD3D", "TRDC", "TRGC1", "TRGC2"), ] |>
 	colSums() |>
 	scales::rescale(to = c(0, 1))
 
 counts_negative <-
-	assay(sce_obj, "logcounts")[c("CD8A", "CD8B"), ] |>
+	assay(seurat_obj, "logcounts")[c("CD8A", "CD8B"), ] |>
 	colSums() |>
 	scales::rescale(to = c(0, 1))
 
-sce_obj$signature_score <- counts_positive - counts_negative
+seurat_obj$signature_score <- counts_positive - counts_negative
 
-sce_obj_gamma_delta <- sce_obj[, sce_obj$signature_score > 0.7]
+seurat_obj_gamma_delta <- seurat_obj[, seurat_obj$signature_score > 0.7]
 
 # Reanalysis
 # ...
@@ -406,12 +417,12 @@ single_cell_object |>
 We'll demonstrate creating a 3D plot using some data that has 3 UMAP dimensions.
 
 ```{r umap plot 2, message = FALSE, warning = FALSE, fig.width=8, fig.height=8}
-pbmc <- RMedicine2023tidytranscriptomics::seurat_obj_UMAP3
+seurat_obj_UMAP3 <- RMedicine2023tidytranscriptomics::seurat_obj_UMAP3
 
 # Look at the object
-pbmc |> select(contains("UMAP"), everything())
+seurat_obj_UMAP3 |> select(contains("UMAP"), everything())
 
-pbmc |>
+seurat_obj_UMAP3 |>
 	
 	tidyseurat::plot_ly(
 		x = ~`UMAP_1`,
@@ -431,7 +442,19 @@ pbmc |>
 
 2. There is a cluster of cells characterised by a low RNA output (nCount_RNA). Use tidygate to identify the cell composition (curated_cell_type) of that cluster.
 
-# Part 3 Pseudobulk analyses
+# Part 3 Nested analyses
+
+When analysing single cell data is sometimes necessary to perform calculations on data subsets. For example, we might want to estimate difference in mRNA abundance between two condition for each cell type. 
+
+`tidyr` and `purrr` offer a great tool to perform iterativre analyses in a functional way.
+
+We use tidyverse `nest` to group the data. The command below will create a tibble containing a column with a SummarizedExperiment object for each cell type. `nest` is similar to tidyverse `group_by`, except with `nest` each group is stored in a single row, and can be a complex object such as `Seurat`.
+
+```{r nest seurat}
+
+```
+
+# Part 4 Pseudobulk analyses
 
 Next we want to identify genes whose transcription is affected by treatment in this dataset, comparing treated and untreated patients. We can do this with pseudobulk analysis. We aggregate cell-wise transcript abundance into pseudobulk samples and can then perform hypothesis testing using the very well established bulk RNA sequencing tools. For example, we can use DESeq2 in tidybulk to perform differential expression testing. For more details on pseudobulk analysis see [here](https://hbctraining.github.io/scRNA-seq/lessons/pseudobulk_DESeq2_scrnaseq.html).
 

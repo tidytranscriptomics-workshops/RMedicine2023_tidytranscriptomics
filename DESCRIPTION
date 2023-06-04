@@ -8,13 +8,14 @@ Authors@R: c(
     person("Stefano", "Mangiola", email="mangiola.s@wehi.edu.au",
     role = c("aut","cre"),
     comment = c(ORCID = "0000-0001-7474-836X")))
-Maintainer: Maria Doyle <maria.doyle@petermac.org>, Stefano Mangiola <mangiola.s@wehi.edu.au>
+Maintainer: Stefano Mangiola <mangiola.s@wehi.edu.au>
 Description: This workshop will present how to perform analysis of RNA sequencing data following the tidy data paradigm, using the tidyseurat, tidySingleCellExperiment and tidyverse packages.
 License: CC BY-SA 4.0 + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
+Remotes: satijalab/seurat-wrappers
 Depends:
     R (>= 4.1.0)
 Imports:
@@ -43,7 +44,8 @@ Imports:
     dittoSeq,
     tidybulk,
     tidySummarizedExperiment,
-    glue
+    glue,
+    SeuratWrappers
 Suggests:
     knitr,
     rmarkdown,
