@@ -57,6 +57,7 @@ frameborder="0">
 
 ```{r message = FALSE}
 # Load packages
+library(purrr)
 library(Seurat)
 library(ggplot2)
 library(dplyr)
@@ -450,9 +451,124 @@ When analysing single cell data is sometimes necessary to perform calculations o
 
 We use tidyverse `nest` to group the data. The command below will create a tibble containing a column with a SummarizedExperiment object for each cell type. `nest` is similar to tidyverse `group_by`, except with `nest` each group is stored in a single row, and can be a complex object such as `Seurat`.
 
-```{r nest seurat}
+First let's have a look to the cell types that constitute this dataset
 
+```{r nest seurat count}
+seurat_obj |> 
+  count(curated_cell_type)
 ```
+
+Let's group the cells based on cell identity using `nest`
+
+```{r nest seurat }
+
+# Set idents for the differential analysis
+Idents(seurat_obj) = seurat_obj[[]]$"treatment"
+
+seurat_obj_nested = 
+  seurat_obj |> 
+  nest(seurat = -curated_cell_type) 
+
+seurat_obj_nested
+```
+
+Let's see what the first element of the Surat column looks like
+
+```{r nest seurat 2}
+seurat_obj_nested |> 
+  slice(1) |> 
+  pull(seurat)
+```
+Now, let's perform a differential gene-transcript abundance analysis between the two conditions for each cell type.
+
+```{r nest seurat de, message=FALSE}
+seurat_obj_nested = 
+  seurat_obj_nested |> 
+  
+  # Select significant genes
+  mutate(significant_genes = map(
+    seurat,
+    ~ .x |> 
+      
+      # Test
+      NormalizeData(assay="RNA") |> 
+      FindAllMarkers(assay="RNA") |> 
+      
+      # Select top genes
+      filter(p_val_adj<0.05) |> 
+      head(10) |> 
+      rownames()
+  ))
+
+seurat_obj_nested
+```
+We can the lies the top genes with the heat map iteratively across the cell types
+
+```{r nest seurat heatmap, message=FALSE}
+seurat_obj_nested = 
+  seurat_obj_nested |> 
+  
+  # Build heatmaps
+  mutate(heatmap = map2(
+    seurat, significant_genes,
+    ~ .x |> 
+       ScaleData(assay="RNA") |> 
+        DoHeatmap(.y, assay="RNA")
+  )) 
+
+seurat_obj_nested
+```
+
+Let's have a look to the first heatmap
+
+```{r nest seurat heatmap 2, fig.width=8, fig.height=8}
+seurat_obj_nested |> 
+  slice(1) |> 
+  pull(heatmap)
+```
+
+You can do this whole analysis without saving any temporary variable using the piping functionality of tidy R programming 
+
+```{r nest seurat heatmap all, eval=FALSE}
+seurat_obj |> 
+  
+  # Nest
+  nest(seurat = -curated_cell_type) |> 
+  
+  # Select significant genes
+  mutate(significant_genes = map(
+    seurat,
+    ~ .x |> 
+      
+      # Test
+      NormalizeData(assay="RNA") |> 
+      FindAllMarkers(assay="RNA") |> 
+      
+      # Select top genes
+      filter(p_val_adj<0.05) |> 
+      head(10) |> 
+      rownames()
+  )) |> 
+  
+  # Build heatmaps
+  mutate(heatmap = map2(
+    seurat, significant_genes,
+    ~ .x |> 
+       ScaleData(assay="RNA") |> 
+        DoHeatmap(.y, assay="RNA")
+  )) |> 
+  
+  # Extract heatmaps
+  pull(heatmap)
+```
+
+### Exercises
+
+1. Let's suppose that you want to perform the analyses only for cell types that have a total number of cells bigger than 1000. For example, if a cell type has less than a sum of 1000 cells across all samples, that cell type will be dropped from the dataset.
+
+- Answer this question avoiding to save temporary variables, and using the function add_count to count the cells (before nesting), and then filter
+- Answer this question avoiding to save temporary variables, and using the function map_int to count the cells (after nesting), and the filter
+
 
 # Part 4 Pseudobulk analyses
 
