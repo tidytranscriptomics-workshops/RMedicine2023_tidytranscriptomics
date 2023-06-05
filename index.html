@@ -103,15 +103,18 @@
 <div class="section level2">
 <h2 id="workshop-package-installation">Workshop package installation<a class="anchor" aria-label="anchor" href="#workshop-package-installation"></a>
 </h2>
-<p>If you want to install the packages and material post-workshop, the instructions are below. The workshop is designed for R <code>4.1</code> and Bioconductor 3.14.</p>
+<p>If you want to install the packages and material post-workshop, the instructions are below. The workshop is designed for R <code>4.2</code> and Bioconductor 3.16.</p>
 <pre><code><span><span class="co">#install.packages('remotes')</span></span>
 <span></span>
 <span><span class="co"># Need to set this to prevent installation erroring due to even tiny warnings, similar to here: https://github.com/r-lib/remotes/issues/403#issuecomment-748181946</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span><span class="st">"R_REMOTES_NO_ERRORS_FROM_WARNINGS"</span> <span class="op">=</span> <span class="st">"true"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Install same versions used in the workshop</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"stemangiola/tidyseurat@v0.4.0"</span>, <span class="st">"stemangiola/tidySingleCellExperiment@v1.3.3"</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
+<span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"stemangiola/tidyseurat@v0.5.4"</span><span class="op">)</span></span>
+<span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"stemangiola/tidySingleCellExperiment@v1.9.1"</span><span class="op">)</span></span>
+<span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"stemangiola/tidybulk@v1.11.1"</span><span class="op">)</span></span>
+<span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"stemangiola/tidySummarizedExperiment@v1.9.2"</span><span class="op">)</span></span>
+<span>          </span>
 <span><span class="co"># Install workshop package</span></span>
 <span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"tidytranscriptomics-workshops/RMedicine2023_tidytranscriptomics"</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
