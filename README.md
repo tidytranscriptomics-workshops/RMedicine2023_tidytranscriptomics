@@ -14,7 +14,7 @@
 
 ## Syllabus
 
-Material [web page](https://tidytranscriptomics-workshops.github.io/RMedicine2023_tidytranscriptomics/articles/tidytranscriptomics_case_study.html).
+Material [web page](https://tidytranscriptomics-workshops.github.io/RMedicine2023_tidytranscriptomics/articles/main.html).
 
 More details on the workshop are below.
 

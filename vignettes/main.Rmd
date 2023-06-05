@@ -40,7 +40,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 We will use the Cloud during the workshop and this method is available if you want to run the material after the workshop. If you want to install on your own computer, see instructions [here](https://tidytranscriptomics-workshops.github.io/RMedicine2023_tidytranscriptomics/index.html#workshop-package-installation).
 
-Alternatively, you can view the material at the workshop webpage [here](https://tidytranscriptomics-workshops.github.io/RMedicine2023_tidytranscriptomics/articles/tidytranscriptomics_case_study.html).
+Alternatively, you can view the material at the workshop webpage [here](https://tidytranscriptomics-workshops.github.io/RMedicine2023_tidytranscriptomics/articles/main.html).
 
 ## Introduction to tidytranscriptomics
 
