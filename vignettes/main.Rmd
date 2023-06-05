@@ -591,6 +591,152 @@ library(tidybulk)
 library(tidySummarizedExperiment)
 ```
 
+```{r pseudobulk}
+pseudo_bulk <-
+	seurat_obj |>
+	RMedicine2023tidytranscriptomics::aggregate_cells(c(sample, curated_cell_type), assays = "RNA")
+
+pseudo_bulk
+```
+
+### Tidybulk and tidySummarizedExperiment
+
+With `tidySummarizedExperiment` and `tidybulk` it is easy to split the data into groups and perform analyses on each without needing to create separate objects.
+
+## Tidybulk functions/utilities available
+
+| Function                            | Description                                                                        |
+|-------------------------------------|------------------------------------------------------------------------------------|
+| `aggregate_duplicates`              | Aggregate abundance and annotation of duplicated transcripts in a robust way       |
+| `identify_abundant` `keep_abundant` | identify or keep the abundant genes                                                |
+| `keep_variable`                     | Filter for top variable features                                                   |
+| `scale_abundance`                   | Scale (normalise) abundance for RNA sequencing depth                               |
+| `reduce_dimensions`                 | Perform dimensionality reduction (PCA, MDS, tSNE, UMAP)                            |
+| `cluster_elements`                  | Labels elements with cluster identity (kmeans, SNN)                                |
+| `remove_redundancy`                 | Filter out elements with highly correlated features                                |
+| `adjust_abundance`                  | Remove known unwanted variation (Combat)                                           |
+| `test_differential_abundance`       | Differential transcript abundance testing (DESeq2, edgeR, voom)                    |
+| `deconvolve_cellularity`            | Estimated tissue composition (Cibersort, llsr, epic, xCell, mcp_counter, quantiseq |
+| `test_differential_cellularity`     | Differential cell-type abundance testing                                           |
+| `test_stratification_cellularity`   | Estimate Kaplan-Meier survival differences                                         |
+| `test_gene_enrichment`              | Gene enrichment analyses (EGSEA)                                                   |
+| `test_gene_overrepresentation`      | Gene enrichment on list of transcript names (no rank)                              |
+| `test_gene_rank`                    | Gene enrichment on list of transcript (GSEA)                                       |
+| `impute_missing_abundance`          | Impute abundance for missing data points using sample groupings                    |
+
+We use tidyverse `nest` to group the data. The command below will create a tibble containing a column with a SummarizedExperiment object for each cell type. `nest` is similar to tidyverse `group_by`, except with `nest` each group is stored in a single row, and can be a complex object such as a plot or SummarizedExperiment.
+
+```{r pseudobulk2}
+pseudo_bulk_nested <- 
+	pseudo_bulk |>
+	nest(grouped_summarized_experiment = -curated_cell_type)
+
+pseudo_bulk_nested
+```
+
+To explore the grouping, we can use tidyverse `slice` to choose a row (cell_type) and `pull` to extract the values from a column. If we pull the data column we can view the SummarizedExperiment object. 
+
+```{r pseudobulk3}
+pseudo_bulk_nested |>
+	slice(1) |>
+	pull(grouped_summarized_experiment)
+```
+
+We can then identify differentially expressed genes for each cell type for our condition of interest, treated versus untreated patients. We use tidyverse `map` to apply differential expression functions to each cell type group in the nested data. The result columns will be added to the SummarizedExperiment objects.
+
+```{r pseudobulk4, message=FALSE, warning=FALSE}
+# Differential transcription abundance
+pseudo_bulk_nested <-
+	
+	pseudo_bulk_nested |>
+	
+	# map accepts a data column (.x) and a function. It applies the function to each element of the column.
+	mutate(grouped_summarized_experiment = map(
+		grouped_summarized_experiment,
+		~ .x |>
+			
+			# Removing genes with low expression
+			keep_abundant(factor_of_interest = treatment) |>
+			
+			# Testing for differential expression using DESeq2	
+			test_differential_abundance(~treatment, method="DESeq2") |> 
+			
+			# Scale abundance for FUTURE visualisation
+			scale_abundance(method="TMMwsp") 
+	))
+```
+
+The output is again a tibble containing a SummarizedExperiment object for each cell type.
+
+```{r pseudobulk5}
+pseudo_bulk_nested
+```
+
+If we pull out the SummarizedExperiment object for the first cell type, as before, we can see it now has columns containing the differential expression results (e.g. logFC, PValue).
+
+```{r pseudobulk6}
+pseudo_bulk_nested |>
+	slice(1) |>
+	pull(grouped_summarized_experiment)
+```
+
+We can analyse our nested dataset mapping queries across the `SummarizedExperiment`s
+
+```{r pseudobulk7, message = FALSE}
+
+pseudo_bulk_nested = 
+	pseudo_bulk_nested |>
+	
+	# Identify top significant genes
+	mutate(top_genes = map_chr(
+		grouped_summarized_experiment, 
+		~ .x |> 
+			pivot_transcript() |> 
+			arrange(pvalue) |> 
+			head(1) |> 
+			pull(.feature)
+	)) |> 
+	
+	# Filter top gene
+	mutate(grouped_summarized_experiment = map2(
+		grouped_summarized_experiment, top_genes,
+		~ filter(.x, .feature == .y)
+	)) 
+
+pseudo_bulk_nested
+
+
+```
+
+Plot top differential genes
+
+```{r pseudobulk8}
+
+pseudo_bulk_nested = 
+	pseudo_bulk_nested |>
+	
+	# Plot significant genes for each cell type
+	# map2 is map that accepts 2 input columns (.x, .y) and a function
+	mutate(plot = map2(
+		grouped_summarized_experiment,curated_cell_type,
+		~ .x |>
+			
+			# Plot
+			ggplot(aes(treatment, RNA_scaled + 1)) +
+			geom_boxplot(aes(fill = treatment)) +
+			geom_jitter() +
+			scale_y_log10() +
+			facet_wrap(~.feature, ncol = 3) +
+			ggtitle(.y) +
+			RMedicine2023tidytranscriptomics::theme_multipanel
+	)) 
+
+pseudo_bulk_nested
+
+pseudo_bulk_nested |> pull(plot) 
+
+```
+
 **Session Information**
 
 ```{r}
