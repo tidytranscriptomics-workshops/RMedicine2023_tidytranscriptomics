@@ -15,7 +15,8 @@ Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
-Remotes: satijalab/seurat-wrappers
+Remotes: 
+  satijalab/seurat-wrappers
 Depends:
     R (>= 4.1.0)
 Imports:

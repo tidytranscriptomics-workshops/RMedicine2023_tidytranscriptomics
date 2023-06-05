@@ -120,6 +120,6 @@ aggregate_cells = function(.data, .sample = NULL, slot = "data", assays = NULL, 
 		
 		drop_class("tidyseurat_nested") |> 
 		
-		as_SummarizedExperiment(.sample = !!.sample, .transcript = feature, .abundance = !!as.symbol(names(.data@assays)))
+		tidybulk::as_SummarizedExperiment(.sample = !!.sample, .transcript = feature, .abundance = !!as.symbol(names(.data@assays)))
 	
 }

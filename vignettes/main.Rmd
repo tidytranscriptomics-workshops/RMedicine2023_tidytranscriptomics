@@ -581,7 +581,7 @@ We want to do it for each cell type and the tidy transcriptomics ecosystem makes
 
 To create pseudobulk samples from the single cell samples, we will use a helper function called `aggregate_cells`, available in this workshop package. This function will combine the single cells into a group for each cell type for each sample.
 
-```{r warning=FALSE, message=FALSE, echo=FALSE}
+```{r library pseudobulk, warning=FALSE, message=FALSE, echo=FALSE}
 library(glue)
 library(tidyr)
 library(purrr)
@@ -591,7 +591,7 @@ library(tidybulk)
 library(tidySummarizedExperiment)
 ```
 
-```{r}
+```{r pseudobulk}
 pseudo_bulk <-
 	seurat_obj |>
 	RMedicine2023tidytranscriptomics::aggregate_cells(c(sample, curated_cell_type), assays = "RNA")
@@ -626,7 +626,7 @@ With `tidySummarizedExperiment` and `tidybulk` it is easy to split the data into
 
 We use tidyverse `nest` to group the data. The command below will create a tibble containing a column with a SummarizedExperiment object for each cell type. `nest` is similar to tidyverse `group_by`, except with `nest` each group is stored in a single row, and can be a complex object such as a plot or SummarizedExperiment.
 
-```{r}
+```{r pseudobulk2}
 pseudo_bulk_nested <- 
 	pseudo_bulk |>
 	nest(grouped_summarized_experiment = -curated_cell_type)
@@ -636,7 +636,7 @@ pseudo_bulk_nested
 
 To explore the grouping, we can use tidyverse `slice` to choose a row (cell_type) and `pull` to extract the values from a column. If we pull the data column we can view the SummarizedExperiment object. 
 
-```{r}
+```{r pseudobulk3}
 pseudo_bulk_nested |>
 	slice(1) |>
 	pull(grouped_summarized_experiment)
@@ -644,7 +644,7 @@ pseudo_bulk_nested |>
 
 We can then identify differentially expressed genes for each cell type for our condition of interest, treated versus untreated patients. We use tidyverse `map` to apply differential expression functions to each cell type group in the nested data. The result columns will be added to the SummarizedExperiment objects.
 
-```{r message=FALSE, warning=FALSE}
+```{r pseudobulk4, message=FALSE, warning=FALSE}
 # Differential transcription abundance
 pseudo_bulk_nested <-
 	
@@ -668,13 +668,13 @@ pseudo_bulk_nested <-
 
 The output is again a tibble containing a SummarizedExperiment object for each cell type.
 
-```{r}
+```{r pseudobulk5}
 pseudo_bulk_nested
 ```
 
 If we pull out the SummarizedExperiment object for the first cell type, as before, we can see it now has columns containing the differential expression results (e.g. logFC, PValue).
 
-```{r}
+```{r pseudobulk6}
 pseudo_bulk_nested |>
 	slice(1) |>
 	pull(grouped_summarized_experiment)
@@ -682,7 +682,7 @@ pseudo_bulk_nested |>
 
 We can analyse our nested dataset mapping queries across the `SummarizedExperiment`s
 
-```{r message = FALSE}
+```{r pseudobulk7, message = FALSE}
 
 pseudo_bulk_nested = 
 	pseudo_bulk_nested |>
@@ -710,7 +710,7 @@ pseudo_bulk_nested
 
 Plot top differential genes
 
-```{r}
+```{r pseudobulk8}
 
 pseudo_bulk_nested = 
 	pseudo_bulk_nested |>
