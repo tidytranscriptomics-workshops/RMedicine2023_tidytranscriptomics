@@ -25,3 +25,16 @@
 #' @format  A Seurat object.
 #' @usage data(seurat_obj_UMAP3)
 "seurat_obj_UMAP3"
+
+#' pseudo_bulk
+#'
+#' A SummarizedExperiment object
+#'
+#' @description
+#' This object was saved only because leading to a strange failure of the github action, 
+#' while working perfectly in the local environment
+#' 
+#'
+#' @format  A SummarizedExperiment object.
+#' @usage data(pseudo_bulk)
+"pseudo_bulk"

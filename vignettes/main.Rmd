@@ -591,13 +591,20 @@ library(tidybulk)
 library(tidySummarizedExperiment)
 ```
 
-```{r pseudobulk}
+```{r pseudobulk, eval=FALSE}
 pseudo_bulk <-
 	seurat_obj |>
 	RMedicine2023tidytranscriptomics::aggregate_cells(c(sample, curated_cell_type), assays = "RNA")
+```
 
+```{r pseudobulk load, echo=FALSE}
+data(pseudo_bulk)
+```
+
+```{r pseudobulk print}
 pseudo_bulk
 ```
+
 
 ### Tidybulk and tidySummarizedExperiment
 
