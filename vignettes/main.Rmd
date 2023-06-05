@@ -598,7 +598,7 @@ pseudo_bulk <-
 ```
 
 ```{r pseudobulk load, echo=FALSE}
-data(pseudo_bulk)
+pseudo_bulk = RMedicine2023tidytranscriptomics::pseudo_bulk
 ```
 
 ```{r pseudobulk print}
