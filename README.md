@@ -20,7 +20,7 @@ More details on the workshop are below.
 
 ## Workshop package installation 
 
-If you want to install the packages and material post-workshop, the instructions are below. The workshop is designed for R `4.1` and Bioconductor 3.14.
+If you want to install the packages and material post-workshop, the instructions are below. The workshop is designed for R `4.2` and Bioconductor 3.16.
 
 ```
 #install.packages('remotes')
@@ -29,8 +29,11 @@ If you want to install the packages and material post-workshop, the instructions
 Sys.setenv("R_REMOTES_NO_ERRORS_FROM_WARNINGS" = "true")
 
 # Install same versions used in the workshop
-remotes::install_github(c("stemangiola/tidyseurat@v0.4.0", "stemangiola/tidySingleCellExperiment@v1.3.3"))
-
+BiocManager::install("stemangiola/tidyseurat@v0.5.4")
+BiocManager::install("stemangiola/tidySingleCellExperiment@v1.9.1")
+BiocManager::install("stemangiola/tidybulk@v1.11.1")
+BiocManager::install("stemangiola/tidySummarizedExperiment@v1.9.2")
+          
 # Install workshop package
 
 remotes::install_github("tidytranscriptomics-workshops/RMedicine2023_tidytranscriptomics", build_vignettes = TRUE)
