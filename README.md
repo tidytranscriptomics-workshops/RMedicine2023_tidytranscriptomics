@@ -33,6 +33,7 @@ BiocManager::install("stemangiola/tidyseurat@v0.5.4")
 BiocManager::install("stemangiola/tidySingleCellExperiment@v1.9.1")
 BiocManager::install("stemangiola/tidybulk@v1.11.1")
 BiocManager::install("stemangiola/tidySummarizedExperiment@v1.9.2")
+BiocManager::install("satijalab/seurat-wrappers")
           
 # Install workshop package
 
