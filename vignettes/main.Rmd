@@ -44,7 +44,7 @@ Alternatively, you can view the material at the workshop webpage [here](https://
 
 ## Introduction to tidytranscriptomics
 
-[Here](https://docs.google.com/gview?url=https://raw.githubusercontent.com/tidytranscriptomics-workshops/RMedicine2023_tidytranscriptomics/master/inst/RMedicine2023_tidytranscriptomics.pdf)
+[Here](https://docs.google.com/gview?url=https://raw.githubusercontent.com/tidytranscriptomics-workshops/LoveMangiola2022_tidytranscriptomics/master/inst/LoveMangiola2022_tidytranscriptomics.pdf)
 
 <iframe 
 src="https://docs.google.com/gview?url=https://raw.githubusercontent.com/tidytranscriptomics-workshops/RMedicine2023_tidytranscriptomics/master/inst/RMedicine2023_tidytranscriptomics.pdf&embedded=true" 

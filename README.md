@@ -5,7 +5,7 @@
 
 # Introduction to Tidy Transcriptomics
 <p float="left">
-<img height="100" alt="tidybulk" src="https://github.com/Bioconductor/BiocStickers/blob/master/tidybulk/tidybulk.png?raw=true"/>
+<img height="100" alt="tidybulk" src="man/figures/tidybulk.png"/>
 </p>
 
 ## Instructor names and contact information
@@ -56,7 +56,7 @@ This can be achieved with the integration of packages present in the R CRAN and 
 
 ### Workshop Participation
 
-The workshop format is a 2 hour session consisting of hands-on demos, exercises and Q&A.
+The workshop format is a 3 hour session consisting of hands-on demos, exercises and Q&A.
 
 ### _R_ / _Bioconductor_ packages used
 
@@ -66,8 +66,6 @@ The workshop format is a 2 hour session consisting of hands-on demos, exercises 
 * ggrepel
 * GGally
 * plotly
-
-
 
 ### Workshop goals and objectives
 
